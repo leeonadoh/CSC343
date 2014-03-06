@@ -1,0 +1,17 @@
+DROP TABLE Query1
+DROP TABLE Query2
+DROP TABLE Query3
+DROP TABLE Query4
+DROP TABLE Query5
+DROP TABLE Query6
+DROP TABLE Query7
+DROP VIEW FirstDayMatches 
+DROP VIEW SameTicketDay 
+DROP VIEW AllMatches
+DROP VIEW TotalStadiumsPlayed
+DROP VIEW AvgPlayerTime
+DROP VIEW TotalPlayerGames
+DROP VIEW TotalCountryGames
+DROP VIEW CountryBudget
+DROP VIEW LowestBudgetTeam
+DROP VIEW TopScorer

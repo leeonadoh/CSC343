@@ -1,0 +1,53 @@
+INSERT INTO Query1 
+(
+	SELECT P.fname as fname, P.lname as lname, C.name as country
+	FROM player AS P JOIN country AS C ON P.cid = C.cid
+	WHERE P.goals <> 0 AND P.value / P.goals = (SELECT MIN(value / goals) FROM player WHERE goals <> 0)
+);
+
+INSERT INTO Query2
+(
+	SELECT C.name as name, COUNT(p.pid) AS num
+	FROM club as C Join player AS P ON P.fcid = C.fcid
+	GROUP BY C.fcid 
+	ORDER BY COUNT(p.pid) DESC, name ASC
+	LIMIT 3
+);
+
+INSERT INTO Query3
+(
+	SELECT CASE WHEN m.mid IS NULL then 'False' ELSE 'TRUE' END AS isOpeningGame
+	FROM FirstDayMatches AS m, competes AS cm, country AS co
+	WHERE m.time = (SELECT MIN(time) FROM FirstDayMatches) AND m.mid = cm.mid 
+		AND (cm.country1 = co.cid OR cm.country2 = co.cid) AND co.name = 'Brazil'
+);
+
+INSERT INTO Query4
+(
+	SELECT mid
+	FROM SameTicketDay
+	WHERE total >= 2
+);
+
+INSERT INTO Query5
+(
+	SELECT distinct name
+	FROM TotalStadiumsPlayed
+	WHERE (NumStadiumsPlayed - (SELECT Count(distinct Stadium.sid) FROM Stadium) = 0
+);
+
+INSERT INTO Query6
+(
+	SELECT p.pid as pid, p.fname as fname, p.lname as lname, apt.avgMin as minutes 
+	FROM TotalCountryGames tcg, TotalPlayerGames tpg, AvgPlayerTime apt, player as p
+	WHERE tcg.cid = tpg.cid AND tpg.pid = apt.pid AND p.pid = tpg.pid 
+		AND tpg.totalMatches = tcg.totalMatches AND apt.avgMin > 75 
+	ORDER BY minutes DESC
+);
+
+INSERT INTO Query7
+(
+	SELECT c.name as name, c.coach as coach, cb.budget as budget
+	FROM Country as c, LowestBudgetTeam as cb, TopScorer as ts
+	WHERE c.cid = cb.cid AND cb.cid = ts.cid
+);

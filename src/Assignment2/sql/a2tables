@@ -1,0 +1,94 @@
+
+CREATE TABLE Query1 
+(
+	fname VARCHAR(20),
+	lname VARCHAR(20),
+	country VARCHAR(20)
+);
+
+CREATE TABLE Query2
+(
+	name VARCHAR(20),
+	num INTEGER
+);
+
+CREATE TABLE Query3
+(
+	isOpeningGame BOOLEAN
+);
+
+CREATE TABLE Query4
+(
+	mid INTEGER
+);
+
+CREATE TABLE Query5
+(
+	name VARCHAR(20)
+);
+
+CREATE TABLE Query6
+(
+	pid INTEGER,
+	fname VARCHAR(20),
+	lname VARCHAR(20),
+	minutes NUMERIC
+);
+
+CREATE TABLE Query7
+(
+	name VARCHAR(20),
+	coach VARCHAR(20),
+	budget INTEGER
+);
+
+CREATE VIEW FirstDayMatches AS 
+	SELECT * 
+	FROM match
+	WHERE date = (SELECT min(date) FROM match);
+
+CREATE VIEW SameTicketDay AS
+	SELECT m.mid, count(t.tid) AS total
+	FROM ticket AS t JOIN match AS m ON m.mid = t.mid and t.dateIssued = m.date
+	GROUP BY m.mid;
+
+CREATE VIEW TotalStadiumsPlayed AS
+	SELECT c.name as name, count(distinct s.sid) AS NumStadiumsPlayed
+	FROM match AS m, competes AS co, country AS c, stadium AS s
+	WHERE m.mid = co.mid AND (co.country1 = c.cid OR co.country2 = c.cid) AND m.sid = s.sid 
+	GROUP BY c.cid;
+
+CREATE VIEW AvgPlayerTime AS 
+	SELECT a.pid as pid, avg(minutes) as avgMin, min(p.cid) as cid
+	FROM appearance as a JOIN player as p ON a.pid = p.pid 
+	GROUP BY a.pid;
+
+CREATE VIEW TotalPlayerGames AS
+	SELECT p.pid as pid, count(distinct mid) as totalMatches, min(p.cid) as cid
+	FROM appearance as a JOIN player as p ON a.pid = p.pid
+	GROUP BY p.pid;
+
+CREATE VIEW AllMatches AS
+	SELECT country1 as cid, mid FROM competes
+		UNION 
+	SELECT country2 as cid, mid FROM competes;
+		
+CREATE VIEW TotalCountryGames AS
+	SELECT cid, count(distinct mid) as totalMatches
+	FROM AllMatches
+	GROUP BY cid;
+
+CREATE VIEW CountryBudget AS
+	SELECT cid, sum(value) as budget
+	FROM player
+	GROUP BY cid;
+
+CREATE VIEW LowestBudgetTeam AS
+	Select cid, budget
+	FROM CountryBudget
+	WHERE budget = (SELECT min(budget) from CountryBudget);
+
+CREATE VIEW TopScorer AS
+	SELECT pid, cid
+	FROM player
+	WHERE goals = (SELECT max(goals) FROM player);
