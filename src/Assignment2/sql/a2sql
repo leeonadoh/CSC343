@@ -16,7 +16,7 @@ INSERT INTO Query2
 
 INSERT INTO Query3
 (
-	SELECT CASE WHEN m.mid IS NULL then 'False' ELSE 'TRUE' END AS isOpeningGame
+	SELECT CASE WHEN m.mid IS NULL then False ELSE TRUE END AS isOpeningGame
 	FROM FirstDayMatches AS m, competes AS cm, country AS co
 	WHERE m.time = (SELECT MIN(time) FROM FirstDayMatches) AND m.mid = cm.mid 
 		AND (cm.country1 = co.cid OR cm.country2 = co.cid) AND co.name = 'Brazil'
@@ -27,13 +27,14 @@ INSERT INTO Query4
 	SELECT mid
 	FROM SameTicketDay
 	WHERE total >= 2
+	ORDER BY total DESC
 );
 
 INSERT INTO Query5
 (
 	SELECT distinct name
 	FROM TotalStadiumsPlayed
-	WHERE (NumStadiumsPlayed - (SELECT Count(distinct Stadium.sid) FROM Stadium) = 0
+	WHERE NumStadiumsPlayed - (SELECT Count(distinct Stadium.sid) FROM Stadium) = 0
 );
 
 INSERT INTO Query6
